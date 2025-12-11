@@ -23,7 +23,12 @@ const initialFormData: ConsultationFormData = {
 };
 
 interface ConsultationState {
-  // Doctor state
+  // Doctors list state
+  doctors: Doctor[];
+  doctorsLoading: boolean;
+  doctorsError: string | null;
+
+  // Selected doctor state
   doctor: Doctor | null;
   doctorLoading: boolean;
   doctorError: string | null;
@@ -62,6 +67,10 @@ interface ConsultationState {
   formError: string | null;
 
   // Actions
+  setDoctors: (doctors: Doctor[]) => void;
+  setDoctorsLoading: (loading: boolean) => void;
+  setDoctorsError: (error: string | null) => void;
+
   setDoctor: (doctor: Doctor | null) => void;
   setDoctorLoading: (loading: boolean) => void;
   setDoctorError: (error: string | null) => void;
@@ -99,6 +108,10 @@ interface ConsultationState {
 
 export const useConsultationStore = create<ConsultationState>((set) => ({
   // Initial state
+  doctors: [],
+  doctorsLoading: false,
+  doctorsError: null,
+
   doctor: null,
   doctorLoading: false,
   doctorError: null,
@@ -131,6 +144,10 @@ export const useConsultationStore = create<ConsultationState>((set) => ({
   formError: null,
 
   // Actions
+  setDoctors: (doctors) => set({ doctors }),
+  setDoctorsLoading: (doctorsLoading) => set({ doctorsLoading }),
+  setDoctorsError: (doctorsError) => set({ doctorsError }),
+
   setDoctor: (doctor) => set({ doctor }),
   setDoctorLoading: (doctorLoading) => set({ doctorLoading }),
   setDoctorError: (doctorError) => set({ doctorError }),

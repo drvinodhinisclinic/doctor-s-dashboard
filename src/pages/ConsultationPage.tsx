@@ -1,19 +1,32 @@
 import { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useConsultationStore } from "@/stores/consultationStore";
-import { fetchDoctor, fetchAppointments, fetchTemplates } from "@/lib/api";
+import { fetchDoctor, fetchDoctors, fetchAppointments, fetchTemplates } from "@/lib/api";
 import { AppointmentsList } from "@/components/consultation/AppointmentsList";
 import { PatientHeader } from "@/components/consultation/PatientHeader";
 import { ConsultationForm } from "@/components/consultation/ConsultationForm";
 import { RightSidebar } from "@/components/consultation/RightSidebar";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Stethoscope, GraduationCap, Calendar } from "lucide-react";
 
 export default function ConsultationPage() {
   const { doctorId } = useParams<{ doctorId: string }>();
+  const navigate = useNavigate();
 
   const {
+    doctors,
+    doctorsLoading,
+    setDoctors,
+    setDoctorsLoading,
+    setDoctorsError,
     doctor,
     doctorLoading,
     doctorError,
@@ -29,8 +42,26 @@ export default function ConsultationPage() {
     selectedAppointment,
   } = useConsultationStore();
 
+  // Load all doctors on mount
   useEffect(() => {
-    const loadInitialData = async () => {
+    const loadDoctors = async () => {
+      setDoctorsLoading(true);
+      setDoctorsError(null);
+      try {
+        const doctorsData = await fetchDoctors();
+        setDoctors(doctorsData);
+      } catch (error) {
+        setDoctorsError("Failed to load doctors");
+      } finally {
+        setDoctorsLoading(false);
+      }
+    };
+    loadDoctors();
+  }, []);
+
+  // Load doctor-specific data when doctorId changes
+  useEffect(() => {
+    const loadDoctorData = async () => {
       if (!doctorId) return;
 
       const id = parseInt(doctorId, 10);
@@ -72,8 +103,12 @@ export default function ConsultationPage() {
       }
     };
 
-    loadInitialData();
+    loadDoctorData();
   }, [doctorId]);
+
+  const handleDoctorChange = (newDoctorId: string) => {
+    navigate(`/consultation/${newDoctorId}`);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -105,14 +140,34 @@ export default function ConsultationPage() {
               ) : null}
             </div>
 
-            <Badge variant="secondary" className="flex items-center gap-2">
-              <Calendar className="h-3.5 w-3.5" />
-              {new Date().toLocaleDateString("en-US", {
-                weekday: "short",
-                month: "short",
-                day: "numeric",
-              })}
-            </Badge>
+            <div className="flex items-center gap-4">
+              {/* Doctor Dropdown */}
+              <Select
+                value={doctorId}
+                onValueChange={handleDoctorChange}
+                disabled={doctorsLoading}
+              >
+                <SelectTrigger className="w-[220px] bg-background">
+                  <SelectValue placeholder="Select Doctor" />
+                </SelectTrigger>
+                <SelectContent className="bg-popover">
+                  {doctors.map((doc) => (
+                    <SelectItem key={doc.doctor_id} value={String(doc.doctor_id)}>
+                      {doc.doctor_name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Badge variant="secondary" className="flex items-center gap-2">
+                <Calendar className="h-3.5 w-3.5" />
+                {new Date().toLocaleDateString("en-US", {
+                  weekday: "short",
+                  month: "short",
+                  day: "numeric",
+                })}
+              </Badge>
+            </div>
           </div>
         </div>
       </header>
