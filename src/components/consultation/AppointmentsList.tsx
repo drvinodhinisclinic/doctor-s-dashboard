@@ -103,7 +103,9 @@ export function AppointmentsList() {
     );
   }
 
-  if (appointments.length === 0) {
+  const appointmentsList = Array.isArray(appointments) ? appointments : [];
+
+  if (appointmentsList.length === 0) {
     return (
       <div className="p-4">
         <Card className="bg-muted/50">
@@ -118,7 +120,7 @@ export function AppointmentsList() {
 
   return (
     <div className="space-y-3 p-4">
-      {appointments.map((appointment) => {
+      {appointmentsList.map((appointment) => {
         const isSelected = selectedAppointment?.appointment_id === appointment.appointment_id;
         return (
           <Card

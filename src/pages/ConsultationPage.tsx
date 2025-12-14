@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useConsultationStore } from "@/stores/consultationStore";
 import { fetchDoctor, fetchDoctors, fetchAppointments, fetchTemplates } from "@/lib/api";
-import type { Doctor } from "@/types/consultation";
+import type { Doctor, Appointment } from "@/types/consultation";
 import { AppointmentsList } from "@/components/consultation/AppointmentsList";
 import { PatientHeader } from "@/components/consultation/PatientHeader";
 import { ConsultationForm } from "@/components/consultation/ConsultationForm";
@@ -88,7 +88,10 @@ export default function ConsultationPage() {
       setAppointmentsError(null);
       try {
         const appointmentsData = await fetchAppointments(id);
-        setAppointments(appointmentsData);
+        const appointmentsArray = Array.isArray(appointmentsData) 
+          ? appointmentsData 
+          : ((appointmentsData as { data?: Appointment[] })?.data || []);
+        setAppointments(appointmentsArray);
       } catch (error) {
         setAppointmentsError("Failed to load appointments");
       } finally {
