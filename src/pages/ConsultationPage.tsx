@@ -87,15 +87,30 @@ export default function ConsultationPage() {
       setAppointmentsLoading(true);
       setAppointmentsError(null);
       try {
-        const today = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
-        const appointmentsData = await fetchAppointments(today);
-        const appointmentsArray = Array.isArray(appointmentsData) 
-          ? appointmentsData 
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, "0");
+        const day = String(today.getDate()).padStart(2, "0");
+        const todayStr = `${year}-${month}-${day}`; // YYYY-MM-DD in local time
+
+        console.log("[ConsultationPage] Fetching appointments", { doctorId: id, date: todayStr });
+
+        const appointmentsData = await fetchAppointments(todayStr);
+        const appointmentsArray = Array.isArray(appointmentsData)
+          ? appointmentsData
           : ((appointmentsData as { data?: Appointment[] })?.data || []);
+
         // Filter appointments by selected doctor
-        const filteredAppointments = appointmentsArray.filter(apt => apt.doctor_id === id);
+        const filteredAppointments = appointmentsArray.filter((apt) => apt.doctor_id === id);
+
+        console.log("[ConsultationPage] Appointments fetched", {
+          total: appointmentsArray.length,
+          filtered: filteredAppointments.length,
+        });
+
         setAppointments(filteredAppointments);
       } catch (error) {
+        console.error("[ConsultationPage] Failed to load appointments", error);
         setAppointmentsError("Failed to load appointments");
       } finally {
         setAppointmentsLoading(false);
