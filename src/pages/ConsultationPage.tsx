@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useConsultationStore } from "@/stores/consultationStore";
 import { fetchDoctor, fetchDoctors, fetchAppointments, fetchTemplates } from "@/lib/api";
+import type { Doctor } from "@/types/consultation";
 import { AppointmentsList } from "@/components/consultation/AppointmentsList";
 import { PatientHeader } from "@/components/consultation/PatientHeader";
 import { ConsultationForm } from "@/components/consultation/ConsultationForm";
@@ -49,7 +50,11 @@ export default function ConsultationPage() {
       setDoctorsError(null);
       try {
         const doctorsData = await fetchDoctors();
-        setDoctors(doctorsData);
+        // Handle both array and {data: [...]} response formats
+        const doctorsArray = Array.isArray(doctorsData) 
+          ? doctorsData 
+          : ((doctorsData as { data?: Doctor[] })?.data || []);
+        setDoctors(doctorsArray);
       } catch (error) {
         setDoctorsError("Failed to load doctors");
       } finally {
@@ -151,7 +156,7 @@ export default function ConsultationPage() {
                   <SelectValue placeholder="Select Doctor" />
                 </SelectTrigger>
                 <SelectContent className="bg-popover">
-                  {doctors.map((doc) => (
+                  {Array.isArray(doctors) && doctors.map((doc) => (
                     <SelectItem key={doc.doctor_id} value={String(doc.doctor_id)}>
                       {doc.doctor_name}
                     </SelectItem>
