@@ -27,8 +27,8 @@ export const fetchDoctor = async (doctorId: number): Promise<Doctor> => {
 };
 
 // Appointment APIs
-export const fetchAppointments = async (doctorId: number): Promise<Appointment[]> => {
-  const response = await apiClient.get<Appointment[]>(`/appointments/doctor/${doctorId}`);
+export const fetchAppointments = async (date: string): Promise<Appointment[]> => {
+  const response = await apiClient.get<Appointment[]>(`/appointments/date/${date}`);
   return response.data;
 };
 

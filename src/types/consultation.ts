@@ -8,10 +8,16 @@ export interface Appointment {
   appointment_id: number;
   patient_id: number;
   patient_name: string;
+  patient_mobile: string;
+  patient_age: string;
+  Address: string;
+  doctor_id: number;
   appointment_date: string;
   appointment_time: string;
   reason: string;
-  status: "Pending" | "In Progress" | "Completed" | "Cancelled";
+  status: "Pending" | "Confirmed" | "In Progress" | "Completed" | "Cancelled";
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Patient {

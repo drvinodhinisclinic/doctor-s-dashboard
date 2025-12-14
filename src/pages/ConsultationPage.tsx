@@ -83,15 +83,18 @@ export default function ConsultationPage() {
         setDoctorLoading(false);
       }
 
-      // Load appointments
+      // Load appointments for today's date
       setAppointmentsLoading(true);
       setAppointmentsError(null);
       try {
-        const appointmentsData = await fetchAppointments(id);
+        const today = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
+        const appointmentsData = await fetchAppointments(today);
         const appointmentsArray = Array.isArray(appointmentsData) 
           ? appointmentsData 
           : ((appointmentsData as { data?: Appointment[] })?.data || []);
-        setAppointments(appointmentsArray);
+        // Filter appointments by selected doctor
+        const filteredAppointments = appointmentsArray.filter(apt => apt.doctor_id === id);
+        setAppointments(filteredAppointments);
       } catch (error) {
         setAppointmentsError("Failed to load appointments");
       } finally {
