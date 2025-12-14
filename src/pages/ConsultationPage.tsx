@@ -136,6 +136,12 @@ export default function ConsultationPage() {
     navigate(`/consultation/${newDoctorId}`);
   };
 
+  const doctorsList: Doctor[] = Array.isArray(doctors) && doctors.length > 0
+    ? doctors
+    : doctor
+    ? [doctor]
+    : [];
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -171,13 +177,13 @@ export default function ConsultationPage() {
               <Select
                 value={doctorId}
                 onValueChange={handleDoctorChange}
-                disabled={doctorsLoading}
+                disabled={doctorsLoading || doctorsList.length === 0}
               >
                 <SelectTrigger className="w-[220px] bg-background">
                   <SelectValue placeholder="Select Doctor" />
                 </SelectTrigger>
                 <SelectContent className="bg-popover">
-                  {Array.isArray(doctors) && doctors.map((doc) => (
+                  {doctorsList.map((doc) => (
                     <SelectItem key={doc.doctor_id} value={String(doc.doctor_id)}>
                       {doc.doctor_name}
                     </SelectItem>
