@@ -34,8 +34,14 @@ export const fetchAppointments = async (date: string): Promise<Appointment[]> =>
 
 // Fetch all doctors
 export const fetchDoctors = async (): Promise<Doctor[]> => {
-  const response = await apiClient.get<Doctor[]>("/doctors");
-  return response.data;
+  const response = await apiClient.get<{ success: boolean; doctors: { name: string }[] }>("/doctors");
+  // Transform API response to Doctor[] format
+  const doctors = response.data.doctors || [];
+  return doctors.map((doc, index) => ({
+    doctor_id: index + 1,
+    doctor_name: doc.name,
+    qualification: "",
+  }));
 };
 
 // Patient APIs
