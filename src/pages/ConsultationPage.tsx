@@ -49,13 +49,13 @@ export default function ConsultationPage() {
       setDoctorsLoading(true);
       setDoctorsError(null);
       try {
+        console.log("[ConsultationPage] Fetching doctors...");
         const doctorsData = await fetchDoctors();
-        // Handle both array and {data: [...]} response formats
-        const doctorsArray = Array.isArray(doctorsData) 
-          ? doctorsData 
-          : ((doctorsData as { data?: Doctor[] })?.data || []);
-        setDoctors(doctorsArray);
+        console.log("[ConsultationPage] Doctors response:", doctorsData);
+        // fetchDoctors already returns Doctor[] format
+        setDoctors(doctorsData);
       } catch (error) {
+        console.error("[ConsultationPage] Failed to load doctors:", error);
         setDoctorsError("Failed to load doctors");
       } finally {
         setDoctorsLoading(false);
