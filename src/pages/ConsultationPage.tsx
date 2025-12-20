@@ -49,14 +49,11 @@ export default function ConsultationPage() {
       setDoctorsLoading(true);
       setDoctorsError(null);
       try {
-        console.log("[ConsultationPage] Loading doctors...");
         const doctorsData = await fetchDoctors();
-        console.log("[ConsultationPage] Doctors loaded:", doctorsData);
         // Handle both array and {data: [...]} response formats
         const doctorsArray = Array.isArray(doctorsData) 
           ? doctorsData 
           : ((doctorsData as { data?: Doctor[] })?.data || []);
-        console.log("[ConsultationPage] Setting doctors array:", doctorsArray);
         setDoctors(doctorsArray);
       } catch (error) {
         setDoctorsError("Failed to load doctors");

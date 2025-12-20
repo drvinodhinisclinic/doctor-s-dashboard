@@ -17,7 +17,6 @@ const apiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
-    "ngrok-skip-browser-warning": "true",
   },
 });
 
@@ -35,9 +34,7 @@ export const fetchAppointments = async (date: string): Promise<Appointment[]> =>
 
 // Fetch all doctors
 export const fetchDoctors = async (): Promise<Doctor[]> => {
-  console.log("[API] Fetching doctors from:", API_BASE_URL + "/doctors");
   const response = await apiClient.get<{ success: boolean; doctors: { name: string }[] }>("/doctors");
-  console.log("[API] Doctors response:", response.data);
   // Transform API response to Doctor[] format
   const doctors = response.data.doctors || [];
   return doctors.map((doc, index) => ({
